@@ -15,7 +15,7 @@ cmd:option('-rootPath', 'prepare_datasets/dataset', 'Path to the data')
 cmd:option('-lmdbPath', 'prepare_datasets/lmdb', 'Path to save LMDBs to')
 cmd:option('-frameNum', 11, 'Number of continuous frames for one sample')
 cmd:option('-skip', 3, 'Number of frames to skip in the beginning of the video')
-cmd:option('-videoExtension', 'mp4', 'The extension of the video files (avi/mp4)')
+cmd:option('-videoExtension', 'avi', 'The extension of the video files (avi/mp4)')
 cmd:option('-processes', 1, 'Number of processes used to create LMDB')
 
 local opt = cmd:parse(arg)
@@ -45,9 +45,9 @@ local function createLMDB(dataPath, lmdbPath, id)
     local size = tonumber(sys.execute("find " .. dataPath .. " -type f -name '*'" .. extension .. " | wc -l "))
     vecs:resize(size)
 
+
     local files = io.popen("find -L " .. dataPath .. " -type f -name '*" .. extension .. "'")
     local counter = 1
-    print("Retrieving sizes for sorting...")
     local buffer = tds.Vec()
     buffer:resize(size)
 
@@ -55,6 +55,7 @@ local function createLMDB(dataPath, lmdbPath, id)
         buffer[counter] = file
         counter = counter + 1
     end
+
 
     local function getSize(opts)
         local audioFilePath = opts.file
@@ -95,10 +96,10 @@ local function createLMDB(dataPath, lmdbPath, id)
 
 
     local function getData(opts)
-        print(opts)
         local videoFilePath = opts.file
         local labelFilePath = opts.file:gsub(opts.extension, ".txt")
-        opts.video.init(videoFilePath)
+        local status, height, width, length, fps = opts.video.init(videoFilePath)
+
         local label_content
         for line in io.lines(labelFilePath) do
             label_content = line
@@ -108,18 +109,18 @@ local function createLMDB(dataPath, lmdbPath, id)
         clips = { }
         labels = { }
         start_idx = 1 + opts.opt.skip + (opts.opt.frameNum - 1) / 2
-        clip = torch.Tensor(frameNum, height, width)
-        frame = torch.Tensor(3, height, width)
+        clip = torch.ByteTensor(opts.opt.frameNum, height, width)
+        frame = torch.ByteTensor(3, height, width)
         -- skip the first opts.opt.skip frames
         for x = 1, opts.opt.skip do
-            status = video.frame_rgb(frame)
+            status = opts.video.frame_rgb(frame)
             if status == false then
                 opts.video.exit()
                 return { clips, labels }
             end
         end
         for x = 1, opts.opt.frameNum do
-            status = video.frame_rgb(frame)
+            status = opts.video.frame_rgb(frame)
             if status == false then
                 opts.video.exit()
                 return { clips, labels }
@@ -133,19 +134,21 @@ local function createLMDB(dataPath, lmdbPath, id)
         -- iteratively read next frame data until the end of the video
         while true do
             target_idx = target_idx + 1
-            status = video.frame_rgb(frame)
+            status = opts.video.frame_rgb(frame)
             if status == false then
                 opts.video.exit()
                 return { clips, labels }
             end
-            frame = image.rgb2y(frame)
+            gray_frame = image.rgb2y(frame)
             for x = 1, opts.opt.frameNum - 1 do
                 clip[x] = clip[x + 1]
             end
-            clip[opts.opt.frameNum] = frame
+            clip[opts.opt.frameNum] = gray_frame
             clips[#clips + 1] = clip
             labels[#labels + 1] = label_content:sub(target_idx, target_idx)
         end
+
+
 
         return { clips, labels }
     end
@@ -167,11 +170,11 @@ local function createLMDB(dataPath, lmdbPath, id)
             idx = idx + 1
         end
 
-        if x % 500 == 0 then
-            readerClip:commit(); readerClip = dbClip:txn()
-            readerLabel:commit(); readerLabel = dbLabel:txn()
-            collectgarbage()
-        end
+        -- if x % 500 == 0 then
+        readerClip:commit(); readerClip = dbClip:txn()
+        readerLabel:commit(); readerLabel = dbLabel:txn()
+        collectgarbage()
+        -- end
 
         if x + opt.processes <= size then
             local opts = { extension = extension, file = buffer[x + opt.processes], opt = opt }
@@ -192,6 +195,7 @@ end
 function parent()
     local function looper()
         require 'torch'
+        require 'image'
         local video = assert(require("libvideo_decoder"))
         while true do
             local object = parallel.parent:receive()
@@ -206,7 +210,7 @@ function parent()
     parallel.children:exec(looper)
 
     createLMDB(dataPath .. '/train', lmdbPath .. '/train', 'train')
-    createLMDB(dataPath .. '/test', lmdbPath .. '/test', 'test')
+    -- createLMDB(dataPath .. '/test', lmdbPath .. '/test', 'test')
     parallel.close()
 end
 
