@@ -6,7 +6,7 @@ require 'xlua'
 require 'UtilsMultiGPU'
 require 'Loader'
 require 'nngraph'
-require 'ModelEvaluator'
+-- require 'ModelEvaluator'
 
 local suffix = '_' .. os.date('%Y%m%d_%H%M%S')
 local threads = require 'threads'
@@ -28,7 +28,7 @@ function Network:init(opt)
         require 'cutorch'
         require 'cunn'
         require 'cudnn'
-        require 'BatchBRNNReLU'
+        -- require 'BatchBRNNReLU'
         cutorch.manualSeedAll(seed)
     end
     self.trainingSetLMDBPath = opt.trainingSetLMDBPath
@@ -52,7 +52,7 @@ function Network:init(opt)
         -- self:loadNetwork(opt.modelPath, opt.modelName)
     -- else
     assert(opt.modelName, "Must have given a model to train.")
-    self:prepSpeechModel(opt.modelName, opt)
+    self:prepSegmentationModel(opt.modelName, opt)
     -- end
     -- assert((opt.saveModel or opt.loadModel) and opt.modelPath, "To save/load you must specify the modelPath you want to save to")
     -- setting online loading
@@ -64,7 +64,7 @@ function Network:init(opt)
     self.logger:style { '-', '-', '-' }
 end
 
-function Network:prepSpeechModel(modelName, opt)
+function Network:prepSegmentationModel(modelName, opt)
     local model = require(modelName)
     self.model = model(opt)
 end
@@ -82,7 +82,7 @@ function Network:trainNetwork(epochs, optimizerParams, opt)
 
     local lossHistory = {}
     local validationHistory = {}
-    local criterion = nn.ClassNLLCriterion()
+    local criterion = nn.CrossEntropyCriterion()
     local x, gradParameters = self.model:getParameters()
 
     print("Number of parameters: ", gradParameters:size(1))
@@ -161,7 +161,7 @@ function Network:trainNetwork(epochs, optimizerParams, opt)
         optimizerParams.learningRate = optimizerParams.learningRate / (optimizerParams.learningRateAnnealing or 1)
 
         -- Update validation error rates
-        local wer, cer = self:testNetwork(i)
+        -- local wer, cer = self:testNetwork(i)
 
         print(string.format("Training Epoch: %d Average Loss: %f Average Validation WER: %.2f Average Validation CER: %.2f",
             i, averageLoss, 100 * wer, 100 * cer))

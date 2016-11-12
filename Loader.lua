@@ -59,7 +59,7 @@ end
 
 function Loader:nextBatch(indices)
     local tensors = {}
-    local targets = {}
+    local labels = {}
 
     local maxLength = 0
     local freq = 0
@@ -85,12 +85,16 @@ function Loader:nextBatch(indices)
         width = input:size(3)
 
         table.insert(tensors, input)
-        table.insert(targets, label)
+        table.insert(labels, label)
     end
 
     local inputs = torch.Tensor(size, channel, height, width):zero()
+    local targets = torch.Tensor(size):zero()
     for ind, tensor in ipairs(tensors) do
         inputs[ind]:copy(tensor)
+    end
+    for ind, label in ipairs(labels) do
+        targets[ind] = label
     end
 
     readerClip:abort(); self.dbClip:close()

@@ -1,10 +1,11 @@
 {
-  "input_width": 160,
-  "input_height": 120,
+  "input_width": 124,
+  "input_height": 124,
   "input_channel": 11,
-  "channels": [32, 32],
-  "kernel_heights": [3, 3],
-  "kernel_widths": [3, 3],
+  "channels": [64, 64, 64, 64, 64, 64, 64, 64],
+  "kernel_heights": [5, 5, 5, 5, 5, 5, 5, 5],
+  "kernel_widths": [5, 5, 5, 5, 5, 5, 5, 5],
+  "dilations": [1, 2, 4, 8, 1, 2, 4, 8],
   "with_bn": true,
   "label_size": 4
 }

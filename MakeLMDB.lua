@@ -129,7 +129,7 @@ local function createLMDB(dataPath, lmdbPath, id)
         end
         target_idx = 1 + opts.opt.skip + (opts.opt.frameNum - 1) / 2
         clips[#clips + 1] = clip
-        labels[#labels + 1] = label_content:sub(target_idx, target_idx)
+        labels[#labels + 1] = torch.Tensor(1):fill(tonumber(label_content:sub(target_idx, target_idx)))
 
         -- iteratively read next frame data until the end of the video
         while true do
@@ -145,7 +145,7 @@ local function createLMDB(dataPath, lmdbPath, id)
             end
             clip[opts.opt.frameNum] = gray_frame
             clips[#clips + 1] = clip
-            labels[#labels + 1] = label_content:sub(target_idx, target_idx)
+            labels[#labels + 1] = torch.Tensor(1):fill(tonumber(label_content:sub(target_idx, target_idx)))
         end
 
 
