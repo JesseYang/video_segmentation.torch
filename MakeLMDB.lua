@@ -16,7 +16,7 @@ cmd:option('-lmdbPath', 'prepare_datasets/lmdb', 'Path to save LMDBs to')
 cmd:option('-frameNum', 11, 'Number of continuous frames for one sample')
 cmd:option('-skip', 3, 'Number of frames to skip in the beginning of the video')
 cmd:option('-videoExtension', 'avi', 'The extension of the video files (avi/mp4)')
-cmd:option('-processes', 1, 'Number of processes used to create LMDB')
+cmd:option('-processes', 3, 'Number of processes used to create LMDB')
 
 local opt = cmd:parse(arg)
 local dataPath = opt.rootPath
@@ -163,10 +163,6 @@ local function createLMDB(dataPath, lmdbPath, id)
         local clips, labels = unpack(result)
 
         for i = 1, #clips do
-            if i > 1 then
-                diff = clips[i] - clips[i - 1]
-                print(torch.sum(diff))
-            end
             readerClip:put(idx, clips[i])
             readerLabel:put(idx, labels[i])
             idx = idx + 1
