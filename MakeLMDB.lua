@@ -16,7 +16,7 @@ cmd:option('-lmdbPath', 'prepare_datasets/lmdb', 'Path to save LMDBs to')
 cmd:option('-frameNum', 11, 'Number of continuous frames for one sample')
 cmd:option('-skip', 3, 'Number of frames to skip in the beginning of the video')
 cmd:option('-videoExtension', 'avi', 'The extension of the video files (avi/mp4)')
-cmd:option('-processes', 3, 'Number of processes used to create LMDB')
+cmd:option('-processes', 1, 'Number of processes used to create LMDB')
 
 local opt = cmd:parse(arg)
 local dataPath = opt.rootPath
@@ -109,7 +109,7 @@ local function createLMDB(dataPath, lmdbPath, id)
         clips = { }
         labels = { }
         start_idx = 1 + opts.opt.skip + (opts.opt.frameNum - 1) / 2
-        clip = torch.ByteTensor(opts.opt.frameNum, height, width)
+        clip = torch.Tensor(opts.opt.frameNum, height, width)
         frame = torch.ByteTensor(3, height, width)
         -- skip the first opts.opt.skip frames
         for x = 1, opts.opt.skip do
@@ -125,7 +125,7 @@ local function createLMDB(dataPath, lmdbPath, id)
                 opts.video.exit()
                 return { clips, labels }
             end
-            clip[x] = image.rgb2y(frame)
+            clip[x] = image.rgb2y(frame):float() / 255
         end
         target_idx = 1 + opts.opt.skip + (opts.opt.frameNum - 1) / 2
         clips[#clips + 1] = clip:clone()
@@ -143,7 +143,7 @@ local function createLMDB(dataPath, lmdbPath, id)
             for x = 1, opts.opt.frameNum - 1 do
                 clip[x] = clip[x + 1]
             end
-            clip[opts.opt.frameNum] = gray_frame
+            clip[opts.opt.frameNum] = image.rgb2y(frame):float() / 255
             clips[#clips + 1] = clip:clone()
             labels[#labels + 1] = torch.Tensor(1):fill(tonumber(label_content:sub(target_idx, target_idx)))
         end
@@ -208,7 +208,7 @@ function parent()
     parallel.children:exec(looper)
 
     createLMDB(dataPath .. '/train', lmdbPath .. '/train', 'train')
-    createLMDB(dataPath .. '/test', lmdbPath .. '/test', 'test')
+    -- createLMDB(dataPath .. '/test', lmdbPath .. '/test', 'test')
     parallel.close()
 end
 
