@@ -16,8 +16,8 @@ cmd:option('-modelTrainingPath', './models/', ' Path to save periodic training m
 cmd:option('-saveModelIterations', 50, 'When to save model through training')
 cmd:option('-modelPath', 'video_segmentation.t7', 'Path of final model to save/load')
 -- cmd:option('-dictionaryPath', './equ_dictionary', ' File containing the dictionary to use')
-cmd:option('-epochs', 70, 'Number of epochs for training')
-cmd:option('-learningRate', 1e-3, ' Training learning rate')
+cmd:option('-epochs', 10, 'Number of epochs for training')
+cmd:option('-learningRate', 3e-4, ' Training learning rate')
 cmd:option('-learningRateAnnealing', 1.1, 'Factor to anneal lr every epoch')
 -- cmd:option('-maxNorm', 400, 'Max norm used to normalize gradients')
 cmd:option('-momentum', 0.90, 'Momentum for SGD')
@@ -45,4 +45,4 @@ Network:init(opt)
 Network:trainNetwork(opt.epochs, optimParams, opt)
 
 --Creates the loss plot.
--- Network:createLossGraph()
+Network:createLossGraph()

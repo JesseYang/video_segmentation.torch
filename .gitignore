@@ -1,4 +1,5 @@
 prepare_datasets
+models
 *.so
 *.mp4
 .ipynb_checkpoints

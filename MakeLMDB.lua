@@ -128,7 +128,7 @@ local function createLMDB(dataPath, lmdbPath, id)
             clip[x] = image.rgb2y(frame)
         end
         target_idx = 1 + opts.opt.skip + (opts.opt.frameNum - 1) / 2
-        clips[#clips + 1] = clip
+        clips[#clips + 1] = clip:clone()
         labels[#labels + 1] = torch.Tensor(1):fill(tonumber(label_content:sub(target_idx, target_idx)))
 
         -- iteratively read next frame data until the end of the video
@@ -144,11 +144,9 @@ local function createLMDB(dataPath, lmdbPath, id)
                 clip[x] = clip[x + 1]
             end
             clip[opts.opt.frameNum] = gray_frame
-            clips[#clips + 1] = clip
+            clips[#clips + 1] = clip:clone()
             labels[#labels + 1] = torch.Tensor(1):fill(tonumber(label_content:sub(target_idx, target_idx)))
         end
-
-
 
         return { clips, labels }
     end
@@ -165,6 +163,10 @@ local function createLMDB(dataPath, lmdbPath, id)
         local clips, labels = unpack(result)
 
         for i = 1, #clips do
+            if i > 1 then
+                diff = clips[i] - clips[i - 1]
+                print(torch.sum(diff))
+            end
             readerClip:put(idx, clips[i])
             readerLabel:put(idx, labels[i])
             idx = idx + 1
@@ -210,7 +212,7 @@ function parent()
     parallel.children:exec(looper)
 
     createLMDB(dataPath .. '/train', lmdbPath .. '/train', 'train')
-    -- createLMDB(dataPath .. '/test', lmdbPath .. '/test', 'test')
+    createLMDB(dataPath .. '/test', lmdbPath .. '/test', 'test')
     parallel.close()
 end
 

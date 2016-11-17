@@ -6,7 +6,7 @@ require 'xlua'
 require 'UtilsMultiGPU'
 require 'Loader'
 require 'nngraph'
--- require 'ModelEvaluator'
+require 'ModelEvaluator'
 
 local suffix = '_' .. os.date('%Y%m%d_%H%M%S')
 local threads = require 'threads'
@@ -39,8 +39,7 @@ function Network:init(opt)
 
     self:makeDirectories({ self.logsTrainPath, self.logsValidationPath, self.modelTrainingPath })
 
-    -- self.tester = ModelEvaluator(self.gpu, self.validationSetLMDBPath, self.mapper,
-    --     opt.validationBatchSize, self.logsValidationPath)
+    self.tester = ModelEvaluator(self.gpu, self.validationSetLMDBPath, opt.validationBatchSize, self.logsValidationPath)
     self.saveModel = opt.saveModel
     self.saveModelInTraining = opt.saveModelInTraining or false
     -- self.loadModel = opt.loadModel
@@ -60,7 +59,7 @@ function Network:init(opt)
     self.pool = threads.Threads(1, function() require 'Loader' end)
 
     self.logger = optim.Logger(self.logsTrainPath .. 'train' .. suffix .. '.log')
-    self.logger:setNames { 'loss', 'WER', 'CER' }
+    self.logger:setNames { 'loss', 'ER' }
     self.logger:style { '-', '-', '-' }
 end
 
@@ -71,10 +70,10 @@ end
 
 function Network:testNetwork(epoch)
     self.model:evaluate()
-    local wer, cer = self.tester:runEvaluation(self.model, true, epoch or 1) -- details in log
+    local er = self.tester:runEvaluation(self.model, true, epoch or 1) -- details in log
     self.model:zeroGradParameters()
     self.model:training()
-    return wer, cer
+    return er
 end
 
 function Network:trainNetwork(epochs, optimizerParams, opt)
@@ -161,15 +160,14 @@ function Network:trainNetwork(epochs, optimizerParams, opt)
         optimizerParams.learningRate = optimizerParams.learningRate / (optimizerParams.learningRateAnnealing or 1)
 
         -- Update validation error rates
-        -- local wer, cer = self:testNetwork(i)
+        local er = self:testNetwork(i)
 
-        -- print(string.format("Training Epoch: %d Average Loss: %f Average Validation WER: %.2f Average Validation CER: %.2f",
-        --     i, averageLoss, 100 * wer, 100 * cer))
-        print(string.format("Training Epoch: %d Average Loss: %f", i, averageLoss))
+        print(string.format("Training Epoch: %d Average Loss: %f Average Validation ER: %.2f",
+            i, averageLoss, 100 * er))
 
         table.insert(lossHistory, averageLoss) -- Add the average loss value to the logger.
-        -- table.insert(validationHistory, 100 * wer)
-        -- self.logger:add { averageLoss, 100 * wer, 100 * cer }
+        table.insert(validationHistory, 100 * er)
+        self.logger:add { averageLoss, 100 * er }
 
         -- periodically save the model
         if self.saveModelInTraining and i % self.saveModelIterations == 0 then
