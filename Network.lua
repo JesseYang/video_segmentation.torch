@@ -163,12 +163,13 @@ function Network:trainNetwork(epochs, optimizerParams, opt)
         -- Update validation error rates
         -- local wer, cer = self:testNetwork(i)
 
-        print(string.format("Training Epoch: %d Average Loss: %f Average Validation WER: %.2f Average Validation CER: %.2f",
-            i, averageLoss, 100 * wer, 100 * cer))
+        -- print(string.format("Training Epoch: %d Average Loss: %f Average Validation WER: %.2f Average Validation CER: %.2f",
+        --     i, averageLoss, 100 * wer, 100 * cer))
+        print(string.format("Training Epoch: %d Average Loss: %f", i, averageLoss))
 
         table.insert(lossHistory, averageLoss) -- Add the average loss value to the logger.
-        table.insert(validationHistory, 100 * wer)
-        self.logger:add { averageLoss, 100 * wer, 100 * cer }
+        -- table.insert(validationHistory, 100 * wer)
+        -- self.logger:add { averageLoss, 100 * wer, 100 * cer }
 
         -- periodically save the model
         if self.saveModelInTraining and i % self.saveModelIterations == 0 then

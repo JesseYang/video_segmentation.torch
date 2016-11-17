@@ -22,7 +22,7 @@ function indexer:__init(dirPath, batchSize)
     self.size = clipLMDBSize
     dbClip:close()
     dbLabel:close()
-    self.nbOfBatches = math.ceil(self.size / self.batchSize)
+    self.nbOfBatches = math.floor(self.size / self.batchSize)
     assert(clipLMDBSize == labelLMDBSize, 'Audio and transcript LMDBs had different lengths!')
     assert(self.size > self.batchSize, 'batchSize larger than lmdb size!')
 
@@ -31,7 +31,8 @@ function indexer:__init(dirPath, batchSize)
 end
 
 function indexer:nextIndices()
-    if self.count > #self.inds then self.count = 1 end
+    -- if self.count > #self.inds then self.count = 1 end
+    if self.count > self.nbOfBatches then self.count = 1 end
     local index = self.batchIndices[self.count]
     local inds = self.inds[index]
     self.count = self.count + 1

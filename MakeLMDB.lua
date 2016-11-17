@@ -16,7 +16,7 @@ cmd:option('-lmdbPath', 'prepare_datasets/lmdb', 'Path to save LMDBs to')
 cmd:option('-frameNum', 11, 'Number of continuous frames for one sample')
 cmd:option('-skip', 3, 'Number of frames to skip in the beginning of the video')
 cmd:option('-videoExtension', 'avi', 'The extension of the video files (avi/mp4)')
-cmd:option('-processes', 3, 'Number of processes used to create LMDB')
+cmd:option('-processes', 1, 'Number of processes used to create LMDB')
 
 local opt = cmd:parse(arg)
 local dataPath = opt.rootPath
@@ -210,7 +210,7 @@ function parent()
     parallel.children:exec(looper)
 
     createLMDB(dataPath .. '/train', lmdbPath .. '/train', 'train')
-    createLMDB(dataPath .. '/test', lmdbPath .. '/test', 'test')
+    -- createLMDB(dataPath .. '/test', lmdbPath .. '/test', 'test')
     parallel.close()
 end
 
