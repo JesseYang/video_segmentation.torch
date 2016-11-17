@@ -21,8 +21,8 @@ cmd:option('-learningRate', 3e-4, ' Training learning rate')
 cmd:option('-learningRateAnnealing', 1.1, 'Factor to anneal lr every epoch')
 -- cmd:option('-maxNorm', 400, 'Max norm used to normalize gradients')
 cmd:option('-momentum', 0.90, 'Momentum for SGD')
-cmd:option('-batchSize', 10, 'Batch size in training')
-cmd:option('-validationBatchSize', 10, 'Batch size for validation')
+cmd:option('-batchSize', 40, 'Batch size in training')
+cmd:option('-validationBatchSize', 40, 'Batch size for validation')
 
 local opt = cmd:parse(arg)
 
