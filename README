@@ -1,0 +1,65 @@
+Result:
+
+Exp1:
+  Network:
+    "input_width": 124,
+    "input_height": 124,
+    "input_channel": 11,
+    "channels": [64, 64, 64, 64, 64, 64, 64, 64],
+    "kernel_heights": [5, 5, 5, 5, 5, 5, 5, 5],
+    "kernel_widths": [5, 5, 5, 5, 5, 5, 5, 5],
+    "dilations": [1, 2, 4, 8, 1, 2, 4, 8],
+    "with_bn": true,
+    "label_size": 2
+  Data:
+    The first dataset. All is training data. No validation data. Batch size is 40
+  Loss:
+     [======================================== 229/229 ====================================>]  Tot: 3m36s | Step: 955ms
+    Training Epoch: 1 Average Loss: 0.620966 Average Validation ER: 14.39
+     [======================================== 229/229 ====================================>]  Tot: 3m39s | Step: 961ms
+    Training Epoch: 2 Average Loss: 0.479817 Average Validation ER: 12.33
+     [======================================== 229/229 ====================================>]  Tot: 3m39s | Step: 958ms
+    Training Epoch: 3 Average Loss: 0.374647 Average Validation ER: 8.12
+     [======================================== 229/229 ====================================>]  Tot: 3m41s | Step: 965ms
+    Training Epoch: 4 Average Loss: 0.302144 Average Validation ER: 7.07
+     [======================================== 229/229 ====================================>]  Tot: 3m39s | Step: 960ms
+    Training Epoch: 5 Average Loss: 0.240976 Average Validation ER: 5.87
+     [======================================== 229/229 ====================================>]  Tot: 3m39s | Step: 960ms
+    Training Epoch: 6 Average Loss: 0.193187 Average Validation ER: 6.71
+     [======================================== 229/229 ====================================>]  Tot: 3m40s | Step: 963ms
+    Training Epoch: 7 Average Loss: 0.155233 Average Validation ER: 5.94
+     [======================================== 229/229 ====================================>]  Tot: 3m40s | Step: 962ms
+    Training Epoch: 8 Average Loss: 0.129786 Average Validation ER: 4.18
+     [======================================== 229/229 ====================================>]  Tot: 3m39s | Step: 958ms
+    Training Epoch: 9 Average Loss: 0.109715 Average Validation ER: 9.21
+     [======================================== 229/229 ====================================>]  Tot: 3m40s | Step: 965ms
+    Training Epoch: 10 Average Loss: 0.094367 Average Validation ER: 3.96
+  Analysis:
+    It seems that the Network is too small to prevent underfit. Next step should be to make the network more complicated.
+
+Exp2:
+  Network: same with Exp1, except all channels are set as 256
+  Data:
+    The first dataset. All is training data. No validation data. Batch size is 20
+  Loss:
+     [======================================== 459/459 ====================================>]  Tot: 19m33s | Step: 2s570ms
+    Training Epoch: 1 Average Loss: 0.575466 Average Validation ER: 42.17
+     [======================================== 459/459 ====================================>]  Tot: 19m34s | Step: 2s571ms
+    Training Epoch: 2 Average Loss: 0.355888 Average Validation ER: 42.08
+     [======================================== 459/459 ====================================>]  Tot: 19m37s | Step: 2s586ms
+    Training Epoch: 3 Average Loss: 0.201863 Average Validation ER: 31.03
+     [======================================== 459/459 ====================================>]  Tot: 19m37s | Step: 2s574ms
+    Training Epoch: 4 Average Loss: 0.106577 Average Validation ER: 26.83
+     [======================================== 459/459 ====================================>]  Tot: 19m37s | Step: 2s577ms
+    Training Epoch: 5 Average Loss: 0.060979 Average Validation ER: 32.16
+     [======================================== 459/459 ====================================>]  Tot: 19m38s | Step: 2s579ms
+    Training Epoch: 6 Average Loss: 0.035320 Average Validation ER: 33.22
+     [======================================== 459/459 ====================================>]  Tot: 19m38s | Step: 2s578ms
+    Training Epoch: 7 Average Loss: 0.022489 Average Validation ER: 28.47
+     [======================================== 459/459 ====================================>]  Tot: 19m38s | Step: 2s576ms
+    Training Epoch: 8 Average Loss: 0.016787 Average Validation ER: 34.17
+     [======================================== 459/459 ====================================>]  Tot: 19m37s | Step: 2s579ms
+    Training Epoch: 9 Average Loss: 0.013398 Average Validation ER: 26.79
+     [======================================== 459/459 ====================================>]  Tot: 19m39s | Step: 2s579ms
+    Training Epoch: 10 Average Loss: 0.011350 Average Validation ER: 30.76
+

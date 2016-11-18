@@ -16,7 +16,7 @@ cmd:option('-lmdbPath', 'prepare_datasets/lmdb', 'Path to save LMDBs to')
 cmd:option('-frameNum', 11, 'Number of continuous frames for one sample')
 cmd:option('-skip', 3, 'Number of frames to skip in the beginning of the video')
 cmd:option('-videoExtension', 'avi', 'The extension of the video files (avi/mp4)')
-cmd:option('-processes', 1, 'Number of processes used to create LMDB')
+cmd:option('-processes', 4, 'Number of processes used to create LMDB')
 
 local opt = cmd:parse(arg)
 local dataPath = opt.rootPath
@@ -109,7 +109,7 @@ local function createLMDB(dataPath, lmdbPath, id)
         clips = { }
         labels = { }
         start_idx = 1 + opts.opt.skip + (opts.opt.frameNum - 1) / 2
-        clip = torch.Tensor(opts.opt.frameNum, height, width)
+        clip = torch.ByteTensor(opts.opt.frameNum, height, width)
         frame = torch.ByteTensor(3, height, width)
         -- skip the first opts.opt.skip frames
         for x = 1, opts.opt.skip do
@@ -125,7 +125,7 @@ local function createLMDB(dataPath, lmdbPath, id)
                 opts.video.exit()
                 return { clips, labels }
             end
-            clip[x] = image.rgb2y(frame):float() / 255
+            clip[x] = image.rgb2y(frame)
         end
         target_idx = 1 + opts.opt.skip + (opts.opt.frameNum - 1) / 2
         clips[#clips + 1] = clip:clone()
@@ -143,7 +143,7 @@ local function createLMDB(dataPath, lmdbPath, id)
             for x = 1, opts.opt.frameNum - 1 do
                 clip[x] = clip[x + 1]
             end
-            clip[opts.opt.frameNum] = image.rgb2y(frame):float() / 255
+            clip[opts.opt.frameNum] = image.rgb2y(frame)
             clips[#clips + 1] = clip:clone()
             labels[#labels + 1] = torch.Tensor(1):fill(tonumber(label_content:sub(target_idx, target_idx)))
         end
@@ -153,7 +153,6 @@ local function createLMDB(dataPath, lmdbPath, id)
     end
 
     for x = 1, opt.processes do
-        print(buffer[x])
         local opts = { extension = extension, file = buffer[x], opt = opt }
         parallel.children[x]:send({ opts, getData })
     end
