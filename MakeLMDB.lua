@@ -148,13 +148,16 @@ local function createLMDB(dataPath, lmdbPath, id)
             labels[#labels + 1] = torch.Tensor(1):fill(tonumber(label_content:sub(target_idx, target_idx)))
         end
 
+
         return { clips, labels }
     end
 
     for x = 1, opt.processes do
+        print(buffer[x])
         local opts = { extension = extension, file = buffer[x], opt = opt }
         parallel.children[x]:send({ opts, getData })
     end
+
 
     local processCounter = 1
     local idx = 1
@@ -166,13 +169,12 @@ local function createLMDB(dataPath, lmdbPath, id)
             readerClip:put(idx, clips[i])
             readerLabel:put(idx, labels[i])
             idx = idx + 1
+            if idx % 200 == 0 then
+                readerClip:commit(); readerClip = dbClip:txn()
+                readerLabel:commit(); readerLabel = dbLabel:txn()
+                collectgarbage()
+            end
         end
-
-        -- if x % 500 == 0 then
-        readerClip:commit(); readerClip = dbClip:txn()
-        readerLabel:commit(); readerLabel = dbLabel:txn()
-        collectgarbage()
-        -- end
 
         if x + opt.processes <= size then
             local opts = { extension = extension, file = buffer[x + opt.processes], opt = opt }
