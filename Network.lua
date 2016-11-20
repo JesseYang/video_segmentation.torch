@@ -48,7 +48,7 @@ function Network:init(opt)
     -- setting model saving/loading
     if self.loadModel then
         assert(opt.modelPath, "modelPath hasn't been given to load model.")
-        self:loadNetwork(opt.modelPath, opt.modelName)
+        self:loadNetwork(opt.modelPath)
     else
         assert(opt.modelName, "Must have given a model to train.")
         self:prepSegmentationModel(opt.modelName, opt)
@@ -200,9 +200,8 @@ function Network:saveNetwork(saveName)
 end
 
 --Loads the model into Network.
-function Network:loadNetwork(saveName, modelName)
+function Network:loadNetwork(saveName)
     self.model = loadDataParallel(saveName, self.nGPU)
-    local model = require(modelName)
 end
 
 function Network:makeDirectories(folderPaths)
