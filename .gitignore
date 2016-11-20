@@ -4,3 +4,4 @@ models
 *.mp4
 .ipynb_checkpoints
 logs
+*.t7

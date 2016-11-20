@@ -42,17 +42,17 @@ function Network:init(opt)
     self.tester = ModelEvaluator(self.gpu, self.validationSetLMDBPath, opt.validationBatchSize, self.logsValidationPath)
     self.saveModel = opt.saveModel
     self.saveModelInTraining = opt.saveModelInTraining or false
-    -- self.loadModel = opt.loadModel
+    self.loadModel = opt.loadModel
     self.saveModelIterations = opt.saveModelIterations or 10 -- Saves model every number of iterations.
     -- self.maxNorm = opt.maxNorm or 400 -- value chosen by Baidu for english speech.
     -- setting model saving/loading
-    -- if self.loadModel then
-        -- assert(opt.modelPath, "modelPath hasn't been given to load model.")
-        -- self:loadNetwork(opt.modelPath, opt.modelName)
-    -- else
-    assert(opt.modelName, "Must have given a model to train.")
-    self:prepSegmentationModel(opt.modelName, opt)
-    -- end
+    if self.loadModel then
+        assert(opt.modelPath, "modelPath hasn't been given to load model.")
+        self:loadNetwork(opt.modelPath, opt.modelName)
+    else
+        assert(opt.modelName, "Must have given a model to train.")
+        self:prepSegmentationModel(opt.modelName, opt)
+    end
     -- assert((opt.saveModel or opt.loadModel) and opt.modelPath, "To save/load you must specify the modelPath you want to save to")
     -- setting online loading
     self.indexer = indexer(opt.trainingSetLMDBPath, opt.batchSize)
@@ -203,7 +203,6 @@ end
 function Network:loadNetwork(saveName, modelName)
     self.model = loadDataParallel(saveName, self.nGPU)
     local model = require(modelName)
-    self.calSize = model[2]
 end
 
 function Network:makeDirectories(folderPaths)

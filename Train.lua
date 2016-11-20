@@ -3,7 +3,7 @@ local json = require 'json'
 
 -- Options can be overrided on command line run.
 local cmd = torch.CmdLine()
--- cmd:option('-loadModel', false, 'Load previously saved model')
+cmd:option('-loadModel', true, 'Load previously saved model')
 cmd:option('-saveModel', true, 'Save model after training/testing')
 cmd:option('-modelName', 'VideoSegmentation', 'Name of class containing architecture')
 cmd:option('-nGPU', 1, 'Number of GPUs, set -1 to use CPU')
@@ -21,8 +21,8 @@ cmd:option('-learningRate', 1e-4, ' Training learning rate')
 cmd:option('-learningRateAnnealing', 1.1, 'Factor to anneal lr every epoch')
 -- cmd:option('-maxNorm', 400, 'Max norm used to normalize gradients')
 cmd:option('-momentum', 0.90, 'Momentum for SGD')
-cmd:option('-batchSize', 40, 'Batch size in training')
-cmd:option('-validationBatchSize', 40, 'Batch size for validation')
+cmd:option('-batchSize', 10, 'Batch size in training')
+cmd:option('-validationBatchSize', 10, 'Batch size for validation')
 
 local opt = cmd:parse(arg)
 

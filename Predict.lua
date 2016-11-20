@@ -34,6 +34,8 @@ end
 
 local clip = torch.ByteTensor(opt.frameNum, height, width)
 local frame_idx = 0
+local frame = torch.ByteTensor(3, height, width)
+local input = torch.Tensor(1, opt.frameNum, height, width):zero()
 while true do
     frame_idx = frame_idx + 1
     status = video.frame_rgb(frame)
@@ -52,16 +54,15 @@ while true do
     clip[opt.frameNum] = image.rgb2y(frame)
 
     -- local target_frame_idx = frame_idx - (opt.frameNum - 1) / 2
-    local predictions = model:forward(clip)
+    input[1]:copy(clip)
+    local predictions = model:forward(input)
     -- parse the prediction and insert to result table
-
+    _, prediction = torch.max(predictions, 2)
+    table.insert(result, prediction[1][1])
     ::continue::
 end
 
--- if opt.nGPU > 0 then
---     img = img:cuda()
---     model = model:cuda()
--- end
+for x = #result + 1, frame_idx - 1 do
+    table.insert(result, '-')
+end
 
--- model:evaluate()
--- local predictions = model:forward(img)
