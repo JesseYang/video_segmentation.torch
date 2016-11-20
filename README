@@ -12,7 +12,9 @@ Exp1:
     "with_bn": true,
     "label_size": 2
   Data:
-    The first dataset. All is training data. No validation data. Batch size is 40
+    The first dataset. All is training data (9180 samples). No validation data. Batch size is 40. Only permute batch order among different epochs.
+  Optimization:
+    Learning rate: 1e-4
   Loss:
      [======================================== 229/229 ====================================>]  Tot: 3m36s | Step: 955ms
     Training Epoch: 1 Average Loss: 0.620966 Average Validation ER: 14.39
@@ -38,28 +40,161 @@ Exp1:
     It seems that the Network is too small to prevent underfit. Next step should be to make the network more complicated.
 
 Exp2:
-  Network: same with Exp1, except all channels are set as 256
+  Network: same with Exp1.
   Data:
-    The first dataset. All is training data. No validation data. Batch size is 20
+    The first dataset. All is training data (9180 samples). No validation data. Batch size is 40. Permute all data among different epochs.
+  Optimization:
+    Learning rate: 1e-4
   Loss:
-     [======================================== 459/459 ====================================>]  Tot: 19m33s | Step: 2s570ms
-    Training Epoch: 1 Average Loss: 0.575466 Average Validation ER: 42.17
-     [======================================== 459/459 ====================================>]  Tot: 19m34s | Step: 2s571ms
-    Training Epoch: 2 Average Loss: 0.355888 Average Validation ER: 42.08
-     [======================================== 459/459 ====================================>]  Tot: 19m37s | Step: 2s586ms
-    Training Epoch: 3 Average Loss: 0.201863 Average Validation ER: 31.03
-     [======================================== 459/459 ====================================>]  Tot: 19m37s | Step: 2s574ms
-    Training Epoch: 4 Average Loss: 0.106577 Average Validation ER: 26.83
-     [======================================== 459/459 ====================================>]  Tot: 19m37s | Step: 2s577ms
-    Training Epoch: 5 Average Loss: 0.060979 Average Validation ER: 32.16
-     [======================================== 459/459 ====================================>]  Tot: 19m38s | Step: 2s579ms
-    Training Epoch: 6 Average Loss: 0.035320 Average Validation ER: 33.22
-     [======================================== 459/459 ====================================>]  Tot: 19m38s | Step: 2s578ms
-    Training Epoch: 7 Average Loss: 0.022489 Average Validation ER: 28.47
-     [======================================== 459/459 ====================================>]  Tot: 19m38s | Step: 2s576ms
-    Training Epoch: 8 Average Loss: 0.016787 Average Validation ER: 34.17
-     [======================================== 459/459 ====================================>]  Tot: 19m37s | Step: 2s579ms
-    Training Epoch: 9 Average Loss: 0.013398 Average Validation ER: 26.79
-     [======================================== 459/459 ====================================>]  Tot: 19m39s | Step: 2s579ms
-    Training Epoch: 10 Average Loss: 0.011350 Average Validation ER: 30.76
+     [======================================== 229/229 ====================================>]  Tot: 3m39s | Step: 962ms     
+    Training Epoch: 1 Average Loss: 0.623611 Average Validation ER: 14.99   
+     [======================================== 229/229 ====================================>]  Tot: 3m40s | Step: 963ms     
+    Training Epoch: 2 Average Loss: 0.277147 Average Validation ER: 3.94
+     [======================================== 229/229 ====================================>]  Tot: 3m40s | Step: 963ms     
+    Training Epoch: 3 Average Loss: 0.136426 Average Validation ER: 3.12
+     [======================================== 229/229 ====================================>]  Tot: 3m38s | Step: 952ms     
+    Training Epoch: 4 Average Loss: 0.095282 Average Validation ER: 2.18
+     [======================================== 229/229 ====================================>]  Tot: 3m39s | Step: 957ms     
+    Training Epoch: 5 Average Loss: 0.081918 Average Validation ER: 1.91
+     [======================================== 229/229 ====================================>]  Tot: 3m38s | Step: 953ms     
+    Training Epoch: 6 Average Loss: 0.069786 Average Validation ER: 1.36
+     [======================================== 229/229 ====================================>]  Tot: 3m39s | Step: 957ms     
+    Training Epoch: 7 Average Loss: 0.062719 Average Validation ER: 1.44
+     [======================================== 229/229 ====================================>]  Tot: 3m37s | Step: 951ms     
+    Training Epoch: 8 Average Loss: 0.052428 Average Validation ER: 1.22
+     [======================================== 229/229 ====================================>]  Tot: 3m38s | Step: 953ms     
+    Training Epoch: 9 Average Loss: 0.049924 Average Validation ER: 0.85
+     [======================================== 229/229 ====================================>]  Tot: 3m38s | Step: 955ms  
+    Training Epoch: 10 Average Loss: 0.048786 Average Validation ER: 0.74
+  Analysis:
+    Permuting all data is much better then just permuting batch order.
 
+Exp3:
+  Network: compared with Exp1, the number of layers is doubled and the kernel is changed to 3.
+    "input_width": 124,
+    "input_height": 124,
+    "input_channel": 11,
+    "channels": [64, 64, 64, 64, 64, 64, 64, 64, 128, 128, 128, 128, 128, 128, 128, 128],
+    "kernel_heights": [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+    "kernel_widths": [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+    "dilations": [1, 2, 4, 8, 1, 2, 4, 8, 1, 2, 4, 8, 1, 2, 4, 8],
+    "with_bn": true,
+    "label_size": 2
+    NUmber of Parameters: 1379010
+  Data:
+    The first dataset. All is training data (9180 samples). No validation data. Batch size is 40. Permute all data among different epochs.
+  Optimization:
+    Learning rate: 1e-4
+  Loss:
+     [======================================== 229/229 ====================================>]  Tot: 3m45s | Step: 996ms
+    Training Epoch: 1 Average Loss: 0.664986 Average Validation ER: 18.26
+     [======================================== 229/229 ====================================>]  Tot: 3m49s | Step: 1s2ms
+    Training Epoch: 2 Average Loss: 0.347670 Average Validation ER: 9.47
+     [======================================== 229/229 ====================================>]  Tot: 3m50s | Step: 1s6ms
+    Training Epoch: 3 Average Loss: 0.165824 Average Validation ER: 3.34
+     [======================================== 229/229 ====================================>]  Tot: 3m50s | Step: 1s3ms
+    Training Epoch: 4 Average Loss: 0.106918 Average Validation ER: 3.45
+     [======================================== 229/229 ====================================>]  Tot: 3m50s | Step: 1s4ms
+    Training Epoch: 5 Average Loss: 0.085147 Average Validation ER: 1.62
+     [======================================== 229/229 ====================================>]  Tot: 3m49s | Step: 1s3ms
+    Training Epoch: 6 Average Loss: 0.068183 Average Validation ER: 1.35
+     [======================================== 229/229 ====================================>]  Tot: 3m50s | Step: 1s4ms
+    Training Epoch: 7 Average Loss: 0.063175 Average Validation ER: 1.17
+     [======================================== 229/229 ====================================>]  Tot: 3m50s | Step: 1s5ms
+    Training Epoch: 8 Average Loss: 0.053840 Average Validation ER: 0.99
+     [======================================== 229/229 ====================================>]  Tot: 3m50s | Step: 1s5ms
+    Training Epoch: 9 Average Loss: 0.046520 Average Validation ER: 0.69
+     [======================================== 229/229 ====================================>]  Tot: 3m49s | Step: 1s5ms
+    Training Epoch: 10 Average Loss: 0.040319 Average Validation ER: 0.73
+  Analysis:
+    At the end of the 10 epochs, the error rate is lower than Exp2, which indicates that Exp2 is underfit.
+
+Exp4:
+  Network: exactly same as Exp3.
+  Data:
+    The first dataset. Training set has 7160 samples, Test set has 1960 samples. Batch size is 40. Permute all data among different epochs
+  Optimization
+    Learning rate: 1e-4
+  Loss:
+     [======================================== 179/179 ====================================>]  Tot: 2m54s | Step: 989ms
+    Training Epoch: 1 Average Loss: 0.681125 Average Validation ER: 32.40
+     [======================================== 179/179 ====================================>]  Tot: 2m55s | Step: 987ms
+    Training Epoch: 2 Average Loss: 0.425067 Average Validation ER: 13.52
+     [======================================== 179/179 ====================================>]  Tot: 2m54s | Step: 984ms
+    Training Epoch: 3 Average Loss: 0.236305 Average Validation ER: 7.60
+     [======================================== 179/179 ====================================>]  Tot: 2m54s | Step: 984ms
+    Training Epoch: 4 Average Loss: 0.135690 Average Validation ER: 5.05
+     [======================================== 179/179 ====================================>]  Tot: 2m54s | Step: 984ms
+    Training Epoch: 5 Average Loss: 0.108049 Average Validation ER: 5.15
+     [======================================== 179/179 ====================================>]  Tot: 2m54s | Step: 985ms
+    Training Epoch: 6 Average Loss: 0.081709 Average Validation ER: 4.49
+     [======================================== 179/179 ====================================>]  Tot: 2m55s | Step: 985ms
+    Training Epoch: 7 Average Loss: 0.081483 Average Validation ER: 3.93
+     [======================================== 179/179 ====================================>]  Tot: 2m54s | Step: 984ms
+    Training Epoch: 8 Average Loss: 0.061957 Average Validation ER: 3.62
+     [======================================== 179/179 ====================================>]  Tot: 2m54s | Step: 984ms
+    Training Epoch: 9 Average Loss: 0.053272 Average Validation ER: 4.13
+     [======================================== 179/179 ====================================>]  Tot: 2m55s | Step: 984ms
+    Training Epoch: 10 Average Loss: 0.050682 Average Validation ER: 3.42
+  Analysis:
+    Seems good!!!
+
+Exp5:
+  Network: exactly same as Exp3.
+  Data:
+    The first dataset. Training set has 7160 samples, Test set has 1960 samples. Batch size is 40. Only permute batch order among different epochs.
+  Optimization
+    Learning rate: 1e-4
+  Loss:
+     [======================================== 179/179 ====================================>]  Tot: 2m55s | Step: 991ms
+    Training Epoch: 1 Average Loss: 0.681125 Average Validation ER: 32.40
+     [======================================== 179/179 ====================================>]  Tot: 2m57s | Step: 1s
+    Training Epoch: 2 Average Loss: 0.620844 Average Validation ER: 15.26
+     [======================================== 179/179 ====================================>]  Tot: 2m57s | Step: 999ms
+    Training Epoch: 3 Average Loss: 0.574220 Average Validation ER: 17.55
+     [======================================== 179/179 ====================================>]  Tot: 2m58s | Step: 1s2ms
+    Training Epoch: 4 Average Loss: 0.524157 Average Validation ER: 11.28
+     [======================================== 179/179 ====================================>]  Tot: 2m58s | Step: 1s3ms
+    Training Epoch: 5 Average Loss: 0.486146 Average Validation ER: 15.20
+     [======================================== 179/179 ====================================>]  Tot: 2m58s | Step: 1s2ms
+    Training Epoch: 6 Average Loss: 0.451867 Average Validation ER: 13.83
+     [======================================== 179/179 ====================================>]  Tot: 2m58s | Step: 1s3ms
+    Training Epoch: 7 Average Loss: 0.397711 Average Validation ER: 15.82
+     [======================================== 179/179 ====================================>]  Tot: 2m58s | Step: 1s5ms
+    Training Epoch: 8 Average Loss: 0.350643 Average Validation ER: 10.05
+     [======================================== 179/179 ====================================>]  Tot: 2m58s | Step: 1s4ms
+    Training Epoch: 9 Average Loss: 0.312149 Average Validation ER: 12.35
+     [======================================== 179/179 ====================================>]  Tot: 2m58s | Step: 1s5ms
+    Training Epoch: 10 Average Loss: 0.265441 Average Validation ER: 18.16
+  Analysis:
+    The Validation ER does not converge, because only the batch order is permutated among different epochs.
+
+Exp6:
+  Network: exactly same as Exp1.
+  Data:
+    The first dataset. Training set has 7160 samples, Test set has 1960 samples. Batch size is 40. Permute all data among different epochs
+  Optimization
+    Learning rate: 1e-4
+  Loss
+     [======================================== 179/179 ====================================>]  Tot: 2m49s | Step: 956ms     
+    Training Epoch: 1 Average Loss: 0.648900 Average Validation ER: 21.33   
+     [======================================== 179/179 ====================================>]  Tot: 2m49s | Step: 950ms     
+    Training Epoch: 2 Average Loss: 0.334724 Average Validation ER: 10.26   
+     [======================================== 179/179 ====================================>]  Tot: 2m48s | Step: 948ms     
+    Training Epoch: 3 Average Loss: 0.177695 Average Validation ER: 4.69
+     [======================================== 179/179 ====================================>]  Tot: 2m48s | Step: 949ms     
+    Training Epoch: 4 Average Loss: 0.114270 Average Validation ER: 7.35
+     [======================================== 179/179 ====================================>]  Tot: 2m48s | Step: 949ms     
+    Training Epoch: 5 Average Loss: 0.095236 Average Validation ER: 3.42
+     [======================================== 179/179 ====================================>]  Tot: 2m48s | Step: 949ms     
+    Training Epoch: 6 Average Loss: 0.079462 Average Validation ER: 2.91
+     [======================================== 179/179 ====================================>]  Tot: 2m49s | Step: 956ms     
+    Training Epoch: 7 Average Loss: 0.070303 Average Validation ER: 3.52
+     [======================================== 179/179 ====================================>]  Tot: 2m50s | Step: 956ms     
+    Training Epoch: 8 Average Loss: 0.060363 Average Validation ER: 3.72
+     [======================================== 179/179 ====================================>]  Tot: 2m49s | Step: 953ms     
+    Training Epoch: 9 Average Loss: 0.054783 Average Validation ER: 3.32
+     [======================================== 179/179 ====================================>]  Tot: 2m50s | Step: 957ms     
+    Training Epoch: 10 Average Loss: 0.048092 Average Validation ER: 2.65   
+  Analysis:
+    The configuration is the same as Exp4, except that the Network is simpler (8 layers vs 16 layers). It performs better then Exp4 within 10 epochs.

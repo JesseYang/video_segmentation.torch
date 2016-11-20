@@ -152,7 +152,8 @@ function Network:trainNetwork(epochs, optimizerParams, opt)
             averageLoss = averageLoss + currentLoss
         end
 
-        self.indexer:permuteBatchOrder()
+        -- self.indexer:permuteBatchOrder()
+        self.indexer:permuteIndices()
 
         averageLoss = averageLoss / self.indexer.nbOfBatches -- Calculate the average loss at this epoch.
 

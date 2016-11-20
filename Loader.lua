@@ -26,6 +26,9 @@ function indexer:__init(dirPath, batchSize)
     assert(clipLMDBSize == labelLMDBSize, 'Audio and transcript LMDBs had different lengths!')
     assert(self.size > self.batchSize, 'batchSize larger than lmdb size!')
 
+    print("Number of samples: " .. self.size)
+    print("Number of samples in each epoch: " .. self.nbOfBatches * self.batchSize)
+
     self.inds = torch.range(1, self.size):split(batchSize)
     self.batchIndices = torch.range(1, self.nbOfBatches)
 end
@@ -40,7 +43,6 @@ function indexer:nextIndices()
 end
 
 function indexer:permuteIndices()
-    print(self.size)
     self.inds = torch.randperm(self.size):split(self.batchSize)
 end
 
