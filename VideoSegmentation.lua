@@ -31,11 +31,13 @@ local function videoSegmentation(opt)
     local fullyConnected = nn.Sequential()
     local cnn_out_channel = opt.channels[#opt.kernel_heights + 1]
     local cnn_out_size = (opt.input_width - pad_width) * (opt.input_height - pad_height)
-    fullyConnected:add(nn.Linear(cnn_out_size * cnn_out_channel, opt.label_size))
+    local cnn_out_unit = cnn_out_size * cnn_out_channel
+    fullyConnected:add(nn.Linear(cnn_out_unit, opt.label_size))
 
     local model = nn.Sequential()
     model:add(conv)
-    model:add(nn.View(opt.batchSize, -1))
+    -- model:add(nn.View(opt.batchSize, -1))
+    model:add(nn.View(-1, cnn_out_unit))
     model:add(fullyConnected, 2)
     model = makeDataParallel(model, opt.nGPU)
     return model
