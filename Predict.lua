@@ -1,10 +1,12 @@
 require 'nn'
+require 'image'
 require 'UtilsMultiGPU'
 local json = require 'json'
 video = assert(require("libvideo_decoder"))
 local cmd = torch.CmdLine()
 cmd:option('-modelPath', 'video_segmentation.t7', 'Path of model to load')
 cmd:option('-videoPath', '', 'Path to the input image to predict on')
+cmd:option('-labelPath', '', 'Path to save the predicted result')
 cmd:option('-frameNum', 11, 'Number of continuous frames for one sample')
 cmd:option('-nGPU', 1)
 
@@ -16,6 +18,7 @@ if opt.nGPU > 0 then
 end
 
 local model =  loadDataParallel(opt.modelPath, opt.nGPU)
+model:evaluate()
 
 local net_opt = json.load('params.json')
 
@@ -25,12 +28,11 @@ assert(height == net_opt.input_height, 'video height must be equal to the Networ
 assert(width == net_opt.input_width, 'video width must be equal to the Network input_width')
 assert(opt.frameNum == net_opt.input_channel, 'frameNum must be equal to the Network input_channel')
 
-local result = { }
+local result = ""
 local start_frame_idx = 1 + (opt.frameNum - 1) / 2
 for x = 1, start_frame_idx - 1 do
-    table.insert(result, '-')
+    result = result .. "-"
 end
-
 
 local clip = torch.ByteTensor(opt.frameNum, height, width)
 local frame_idx = 0
@@ -53,16 +55,18 @@ while true do
     end
     clip[opt.frameNum] = image.rgb2y(frame)
 
-    -- local target_frame_idx = frame_idx - (opt.frameNum - 1) / 2
     input[1]:copy(clip)
-    local predictions = model:forward(input)
-    -- parse the prediction and insert to result table
-    _, prediction = torch.max(predictions, 2)
-    table.insert(result, prediction[1][1])
+    local predictions = model:forward(input:cuda())
+    _, prediction = torch.max(predictions[1], 1)
+    result = result .. prediction[1]
+
     ::continue::
 end
 
 for x = #result + 1, frame_idx - 1 do
-    table.insert(result, '-')
+    result = result .. '-'
 end
 
+file = io.open(opt.labelPath, "w")
+file:write(result)
+file:close()
