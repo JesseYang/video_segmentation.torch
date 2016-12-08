@@ -17,12 +17,18 @@ cmd:option('-frameNum', 11, 'Number of continuous frames for one sample')
 cmd:option('-skip', 3, 'Number of frames to skip in the beginning of the video')
 cmd:option('-videoExtension', 'avi', 'The extension of the video files (avi/mp4)')
 cmd:option('-processes', 3, 'Number of processes used to create LMDB')
+cmd:option('-clear', true, 'Whether clear the existing db')
 
 local opt = cmd:parse(arg)
 local dataPath = opt.rootPath
 local lmdbPath = opt.lmdbPath
 local extension = '.' .. opt.videoExtension
 parallel.nfork(opt.processes)
+
+-- clear the db file if opt.clear is set as true
+if opt.clear == true then
+    sys.execute("rm -rf " .. opt.lmdbPath)
+end
 
 local function startWriter(path, name)
     local db = lmdb.env {
@@ -64,7 +70,8 @@ local function createLMDB(dataPath, lmdbPath, id)
         return { audioFilePath, transcriptFilePath }
     end
 
-    for x = 1, opt.processes do
+    -- print(#buffer)
+    for x = 1, math.min(opt.processes, #buffer) do
         local opts = { extension = extension, file = buffer[x], opt = opt }
         parallel.children[x]:send({ opts, getSize })
     end
@@ -152,7 +159,7 @@ local function createLMDB(dataPath, lmdbPath, id)
         return { clips, labels }
     end
 
-    for x = 1, opt.processes do
+    for x = 1, math.min(opt.processes, #buffer) do
         local opts = { extension = extension, file = buffer[x], opt = opt }
         parallel.children[x]:send({ opts, getData })
     end
