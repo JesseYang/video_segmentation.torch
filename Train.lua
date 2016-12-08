@@ -14,7 +14,7 @@ cmd:option('-logsValidationPath', './logs/ValidationScores/', ' Path to save Val
 cmd:option('-saveModelInTraining', false, 'save model periodically through training')
 cmd:option('-modelTrainingPath', './models/', ' Path to save periodic training models')
 cmd:option('-saveModelIterations', 1, 'When to save model through training')
-cmd:option('-modelPath', '', 'Path of final model to save/load')
+cmd:option('-modelPath', 'VideoSegmentation.t7', 'Path of final model to save/load')
 -- cmd:option('-dictionaryPath', './equ_dictionary', ' File containing the dictionary to use')
 cmd:option('-epochs', 10, 'Number of epochs for training')
 cmd:option('-learningRate', 1e-4, ' Training learning rate')
