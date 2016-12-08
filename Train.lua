@@ -3,7 +3,7 @@ local json = require 'json'
 
 -- Options can be overrided on command line run.
 local cmd = torch.CmdLine()
-cmd:option('-loadModel', true, 'Load previously saved model')
+cmd:option('-loadModel', false, 'Load previously saved model')
 cmd:option('-saveModel', true, 'Save model after training/testing')
 cmd:option('-modelName', 'VideoSegmentation', 'Name of class containing architecture')
 cmd:option('-nGPU', 1, 'Number of GPUs, set -1 to use CPU')
